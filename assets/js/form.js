@@ -34,10 +34,10 @@ function Validator(options) {
         
         if (errorMessage) {
             errorElement.innerText = errorMessage;
-            getParent(inputElement, options.formGroupSelector).classList.add('invalid');
+            getParent(inputElement, options.formGroupSelector).classList.add('invalid'); 
         } else {
             errorElement.innerText = '';
-            getParent(inputElement, options.formGroupSelector).classList.remove('invalid');
+            getParent(inputElement, options.formGroupSelector).classList.remove('invalid'); 
         }
 
         return !errorMessage;
@@ -65,29 +65,7 @@ function Validator(options) {
                 // Trường hợp submit với javascript
                 if (typeof options.onSubmit === 'function') {
                     var enableInputs = formElement.querySelectorAll('[name]');
-                    var formValues = Array.from(enableInputs).reduce(function (values, input) {
-                        
-                        switch(input.type) {
-                            case 'radio':
-                                values[input.name] = formElement.querySelector('input[name="' + input.name + '"]:checked').value;
-                                break;
-                            case 'checkbox':
-                                if (!input.matches(':checked')) {
-                                    values[input.name] = '';
-                                    return values;
-                                }
-                                if (!Array.isArray(values[input.name])) {
-                                    values[input.name] = [];
-                                }
-                                values[input.name].push(input.value);
-                                break;
-                            case 'file':
-                                values[input.name] = input.files;
-                                break;
-                            default:
-                                values[input.name] = input.value;
-                        }
-
+                    var formValues = Array.from(enableInputs).reduce(function (values, input) { 
                         return values;
                     }, {});
                     options.onSubmit(formValues);
@@ -128,14 +106,17 @@ function Validator(options) {
     }
 
 }
-
-
  
 Validator.isRequired = function (selector, message) {
     return {
         selector: selector,
         test: function (value) {
-            return value ? undefined :  message || 'Vui lòng nhập trường này'
+            var regex = /^[a-zA-Z0-9_]+$/;
+            if(regex.test(value)) { 
+                return undefined;
+            } else { 
+                return `Username is not valid`;
+            } 
         }
     };
 }
@@ -145,16 +126,26 @@ Validator.isEmail = function (selector, message) {
         selector: selector,
         test: function (value) {
             var regex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-            return regex.test(value) ? undefined :  message || 'Email is not valid';
+            if(regex.test(value)) { 
+                return undefined;
+            } else { 
+                return `Email is not valid`;
+            } 
         }
     };
 }
 
 Validator.minLength = function (selector, min, message) {
     return {
-        selector: selector,
+        selector: selector, 
         test: function (value) {
-            return value.length >= min ? undefined :  message || `Please enter at least 6 ${min} characters`;
+            var regex = /^[a-zA-Z0-9_]{6,}$/;
+            if(regex.test(value)) { 
+                return undefined;
+            } else { 
+                if(value.length < 6) return 'Password must at least 6 characters'  ;
+                else return `Password is not valid`;
+            } 
         }
     };
 }
@@ -163,7 +154,8 @@ Validator.isConfirmed = function (selector, getConfirmValue, message) {
     return {
         selector: selector,
         test: function (value) {
-            return value === getConfirmValue() ? undefined : message || 'Giá trị nhập vào không chính xác';
+            return value === getConfirmValue() ? undefined : 'Input is not valid' && styleButton();
         }
     }
-}
+} 
+ 
